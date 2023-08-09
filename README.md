@@ -22,12 +22,10 @@ func (r *repository) OnRepositoryEvent(repositoryChannel <-chan bus.RepositoryEv
 }
 ```
 
-The basic insert  function is where things can get interesting in the future. The event, the repository and all the plumbing stay the same but if I want some different handling of the insert. An update is even a better example, perhaps, as I may need to look up some values first before updating. In any case, this is  the highly customizable part. Just  inject a different function into the event  and you change the behavior. 
+The basic insert  function is where things can get interesting in the future. The event, the repository and all the plumbing stay the same but if I want some different handling of the insert, I simply inject a different function. An update is even a better example, perhaps, as I may need to look up some values first before updating. In any case, this is  the highly customizable part. Just  inject a different function into the event  and you change the behavior. 
 ```
 var BasicInsertFunc = func(event *Insert, repo *repository) {
     value := event.value
-    //TODO Remove this after initial development
-    repo.db.AutoMigrate(&value)
     tx := repo.db.Create(value)
     event.Send(bus.NewResponse(value, tx.Error))
 }
