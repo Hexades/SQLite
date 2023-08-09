@@ -1,7 +1,7 @@
 package sqlite
 
 import (
-	"github.com/enjekt/hexabus/bus"
+	"github.com/hexades/hexabus"
 )
 
 const dbtype = "sqlite"

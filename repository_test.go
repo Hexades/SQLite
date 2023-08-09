@@ -9,7 +9,7 @@ import (
 
 	//"time"
 
-	"github.com/enjekt/hexabus/bus"
+	"github.com/hexades/hexabus"
 	"github.com/stretchr/testify/assert"
 )
 

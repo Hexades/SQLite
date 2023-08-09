@@ -3,7 +3,7 @@ module github.com/hexades/sqlite
 go 1.20
 
 require (
-	github.com/enjekt/hexabus v0.0.0-20230808192247-240a8d8dc8a3
+	github.com/hexades/hexabus v0.0.0-20230809080604-5f9e2508a282
 	github.com/stretchr/testify v1.8.4
 	gorm.io/driver/sqlite v1.5.2
 	gorm.io/gorm v1.25.2

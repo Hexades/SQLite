@@ -3,7 +3,7 @@ package sqlite
 import (
 	"log"
 
-	"github.com/enjekt/hexabus/bus"
+	"github.com/hexades/hexabus"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	_ "modernc.org/sqlite"
