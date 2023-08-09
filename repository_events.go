@@ -1,95 +1,79 @@
 package sqlite
 
 import (
-	"github.com/hexades/hexabus"
+	bus "github.com/hexades/hexabus"
 )
 
-const dbtype = "sqlite"
-
-
-func NewOpen(connection string) Open {
-	return &open{connection: connection}
+type SQLiteEvent interface {
+	Execute(repo *repository)
 }
 
-type open struct {
-	bus.RepositoryID
+func NewOpen(connection string, openFunc OpenFunction) *Open {
+	return &Open{connection: connection, openFunc: openFunc}
+}
+
+type Open struct {
 	bus.Event
 	connection string
+	openFunc   OpenFunction
 }
 
-type Open interface {
-	bus.RepositoryRequestEvent
-	OpenConnection() string
+func (e *Open) Execute(repo *repository) {
+	e.openFunc(e, repo)
 }
 
-func (o *open) OpenConnection() string {
-	return o.connection
+func NewRead(queryValue any, readFunc ReadFunction) *Read {
+	return &Read{queryValue: queryValue, readFunc: readFunc}
 }
 
-func NewRead(queryValue any) Read {
-	return &read{queryValue: queryValue}
-}
-
-type Read interface {
-	bus.RepositoryRequestEvent
-	ReadQuery() any
-}
-type read struct {
+type Read struct {
 	bus.Event
+	readFunc   ReadFunction
 	queryValue any
 }
 
-func (r *read) ReadQuery() any {
-	return r.queryValue
+func (e *Read) Execute(repo *repository) {
+	e.readFunc(e, repo)
 }
 
-func NewInsert(value any) Insert {
-	return &insert{value: value}
+func NewInsert(value any, insertFunc InsertFunction) *Insert {
+	return &Insert{value: value, insertFunc: insertFunc}
 }
 
-type insert struct {
+type Insert struct {
+	bus.Event
+	value      any
+	insertFunc InsertFunction
+}
+
+func (e *Insert) Execute(repo *repository) {
+	e.insertFunc(e, repo)
+}
+
+func NewUpdate(value any, updateFunc UpdateFunction) *Update {
+	return &Update{value: value, updateFunc: updateFunc}
+}
+
+type Update struct {
 	bus.Event
 	value any
+	updateFunc UpdateFunction
 }
-type Insert interface {
-	bus.RepositoryRequestEvent
-	InsertQuery() any
-}
-
-func (evt *insert) InsertQuery() any {
-	return evt.value
-}
-func NewUpdate(value any) Update {
-	return &update{value: value}
+func (e *Update) Execute(repo *repository) {
+	e.updateFunc(e, repo)
 }
 
-type update struct {
+
+func NewDelete(value any, deleteFunc DeleteFunction) *Delete {
+	return &Delete{value: value, deleteFunc: deleteFunc}
+}
+
+type Delete struct {
 	bus.Event
 	value any
+	deleteFunc DeleteFunction
 }
 
-type Update interface {
-	bus.RepositoryRequestEvent
-	UpdateQuery() any
-}
-
-func (evt *update) UpdateQuery() any {
-	return evt.value
-}
-func NewDelete(value any) Delete {
-	return &delete{value: value}
-}
-
-type Delete interface {
-	bus.RepositoryRequestEvent
-	DeleteQuery() any
-}
-
-type delete struct {
-	bus.Event
-	value any
-}
-
-func (evt *delete) DeleteQuery() any {
-	return evt.value
+func (e *Delete) Execute(repo *repository) {
+	e.deleteFunc(e, repo)
 }
