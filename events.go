@@ -4,7 +4,6 @@ import (
 	bus "github.com/hexades/hexabus"
 )
 
-// TODO The recursion issue requiring the store of function pointer and extra referencing is unappealing.
 type SQLiteEvent interface {
 	Execute(repo *repository)
 }
@@ -14,7 +13,7 @@ func NewOpen(connection string, openFunc OpenFunction) *Open {
 }
 
 type Open struct {
-	bus.Event
+	bus.RequestResponseEvent
 	connection string
 	openFunc   *OpenFunction
 }
@@ -28,7 +27,7 @@ func NewRead(queryValue any, readFunc ReadFunction) *Read {
 }
 
 type Read struct {
-	bus.Event
+	bus.RequestResponseEvent
 	readFunc   *ReadFunction
 	queryValue any
 }
@@ -42,7 +41,7 @@ func NewInsert(value any, insertFunc InsertFunction) *Insert {
 }
 
 type Insert struct {
-	bus.Event
+	bus.RequestResponseEvent
 	value      any
 	insertFunc *InsertFunction
 }
@@ -56,7 +55,7 @@ func NewUpdate(value any, updateFunc UpdateFunction) *Update {
 }
 
 type Update struct {
-	bus.Event
+	bus.RequestResponseEvent
 	value      any
 	updateFunc *UpdateFunction
 }
@@ -70,7 +69,7 @@ func NewDelete(value any, deleteFunc DeleteFunction) *Delete {
 }
 
 type Delete struct {
-	bus.Event
+	bus.RequestResponseEvent
 	value      any
 	deleteFunc *DeleteFunction
 }
