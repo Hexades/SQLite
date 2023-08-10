@@ -1,11 +1,16 @@
 package sqlite
 
 import (
+	"fmt"
 	bus "github.com/hexades/hexabus"
 )
 
 type model struct {
 	value any
+}
+
+func (m *model) String() string {
+	return fmt.Sprintf("%v", m.value)
 }
 
 type Event interface {
@@ -24,23 +29,4 @@ func (e *SQLiteEvent) Execute(repo *repository) {
 
 func NewEvent(value any, executable SQLiteFunction) *SQLiteEvent {
 	return &SQLiteEvent{data: &model{value: value}, executable: executable}
-}
-
-type OpenEvent struct {
-	bus.RequestResponseEvent
-	data       *Open
-	executable OpenFunction
-}
-
-func (e *OpenEvent) Execute(repo *repository) {
-	e.Send(e.executable(e.data, repo))
-}
-
-func NewOpen(connection string, executable OpenFunction) *OpenEvent {
-	return &OpenEvent{data: &Open{connection: connection}, executable: executable}
-}
-
-type Open struct {
-	bus.RequestResponseEvent
-	connection string
 }

@@ -27,7 +27,7 @@ var td = &TestData{Identifier: "foo", SomeValue: "bar"}
 func openDB(t *testing.T) {
 	b := bus.Get()
 	NewRepository()
-	evt := NewOpen("test_sqlite.db", BasicOpenFunc)
+	evt := NewEvent("test_sqlite.db", BasicOpenFunc)
 	b.SendRepositoryEvent(evt)
 	response := evt.Receive()
 	assert.Nil(t, response.Err)

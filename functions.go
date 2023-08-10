@@ -9,12 +9,11 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-type OpenFunction = func(event *Open, repo *repository) bus.Response
 type SQLiteFunction = func(data *model, repo *repository) bus.Response
 
-var BasicOpenFunc = func(event *Open, repo *repository) bus.Response {
-	log.Println("Received open: ", event)
-	db, err := gorm.Open(sqlite.Open(event.connection), &gorm.Config{})
+var BasicOpenFunc = func(data *model, repo *repository) bus.Response {
+	log.Println("Received open: ", data)
+	db, err := gorm.Open(sqlite.Open(data.String()), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
