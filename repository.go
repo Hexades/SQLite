@@ -21,7 +21,7 @@ func (r *repository) OnRepositoryEvent(repositoryChannel <-chan bus.RepositoryEv
 	for repoEvent := range repositoryChannel {
 
 		switch evt := repoEvent.(type) {
-		case SQLiteEvent:
+		case Event:
 			evt.Execute(r)
 		}
 	}

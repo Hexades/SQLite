@@ -35,7 +35,7 @@ func openDB(t *testing.T) {
 
 func insertData(t *testing.T) {
 	t.Log("Insert ")
-	evt := NewInsert(td, BasicInsertFunc)
+	evt := NewEvent(td, BasicInsertFunc)
 	bus.Get().SendRepositoryEvent(evt)
 	response := evt.Receive()
 	assert.NotNil(t, response)
@@ -46,7 +46,7 @@ func insertData(t *testing.T) {
 func readData(t *testing.T) {
 	t.Log("Read ")
 	query := &TestData{Identifier: "foo"}
-	rd := NewRead(query, ReadFirstFunc)
+	rd := NewEvent(query, ReadFirstFunc)
 	bus.Get().SendRepositoryEvent(rd)
 	response := rd.Receive()
 	assert.NotNil(t, response)
@@ -61,17 +61,13 @@ func readData(t *testing.T) {
 }
 func updateData(t *testing.T) {
 	t.Log("Update ")
-	event := NewUpdate(&TestData{Identifier: "foo", SomeValue: "Doodah"}, BasicUpdateFunc)
+	updateData := &TestData{Identifier: "foo", SomeValue: "Doodah"}
+	event := NewEvent(updateData, BasicUpdateFunc)
 	bus.Get().SendRepositoryEvent(event)
 	response := event.Receive()
 	assert.NotNil(t, response)
-	fmt.Println("Response Value: ", response)
 
-	switch val := response.Value.(type) {
-	case TestData:
-		log.Println(val)
-	}
-	assert.Equal(t, event.value, response.Value)
+	assert.Equal(t, updateData, response.Value)
 	t.Log("End Read")
 }
 

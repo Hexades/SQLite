@@ -9,41 +9,40 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-type OpenFunction = func(event *Open, repo *repository)
-type ReadFunction = func(event *Read, repo *repository)
-type InsertFunction = func(event *Insert, repo *repository)
-type UpdateFunction = func(event *Update, repo *repository)
-type DeleteFunction = func(event *Delete, repo *repository)
+type OpenFunction = func(event *Open, repo *repository) bus.Response
+type SQLiteFunction = func(data *model, repo *repository) bus.Response
 
-var BasicOpenFunc = func(event *Open, repo *repository) {
-	log.Println("Received open: ",event)
+var BasicOpenFunc = func(event *Open, repo *repository) bus.Response {
+	log.Println("Received open: ", event)
 	db, err := gorm.Open(sqlite.Open(event.connection), &gorm.Config{})
-	if err!=nil { panic(err)}
+	if err != nil {
+		panic(err)
+	}
 	repo.db = db
-	event.Send(bus.NewResponse(repo.db, err))
+	return bus.NewResponse(repo.db, err)
 }
-var ReadFirstFunc = func(event *Read, repo *repository) {
-	value := event.queryValue
+var ReadFirstFunc = func(data *model, repo *repository) bus.Response {
+	value := data.value
 	tx := repo.db.First(value)
-	event.Send(bus.NewResponse(value, tx.Error))
+	return bus.NewResponse(value, tx.Error)
 }
 
-var BasicInsertFunc = func(event *Insert, repo *repository) {
-	value := event.value
+var BasicInsertFunc = func(data *model, repo *repository) bus.Response {
+	value := data.value
 	//TODO Remove this after initial development
 	repo.db.AutoMigrate(&value)
 	tx := repo.db.Create(value)
-	event.Send(bus.NewResponse(value, tx.Error))
+	return bus.NewResponse(value, tx.Error)
 }
 
-var BasicUpdateFunc = func(event *Update, repo *repository) {
-	value := event.value
+var BasicUpdateFunc = func(data *model, repo *repository) bus.Response {
+	value := data.value
 	tx := repo.db.Updates(value)
-	event.Send(bus.NewResponse(value, tx.Error))
+	return bus.NewResponse(value, tx.Error)
 }
 
-var BasicDeleteFunc = func(event *Update, repo *repository) {
-	value := event.value
+var BasicDeleteFunc = func(data *model, repo *repository) bus.Response {
+	value := data.value
 	tx := repo.db.Delete(value)
-	event.Send(bus.NewResponse(value, tx.Error))
+	return bus.NewResponse(value, tx.Error)
 }
