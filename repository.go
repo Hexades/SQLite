@@ -12,7 +12,7 @@ type repository struct {
 
 func NewRepository() *repository {
 	r := new(repository)
-	bus.Get().AddRepositoryListener(r)
+	bus.AddRepositoryListener(r)
 	return r
 }
 

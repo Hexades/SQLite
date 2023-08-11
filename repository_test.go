@@ -25,10 +25,9 @@ func TestSQLiteRepositorySuite(t *testing.T) {
 var td = &TestData{Identifier: "foo", SomeValue: "bar"}
 
 func openDB(t *testing.T) {
-	b := bus.Get()
 	NewRepository()
 	evt := NewEvent("test_sqlite.db", BasicOpenFunc)
-	b.SendRepositoryEvent(evt)
+	bus.SendRepositoryEvent(evt)
 	response := evt.Receive()
 	assert.Nil(t, response.Err)
 }
@@ -36,7 +35,7 @@ func openDB(t *testing.T) {
 func insertData(t *testing.T) {
 	t.Log("Insert ")
 	evt := NewEvent(td, BasicInsertFunc)
-	bus.Get().SendRepositoryEvent(evt)
+	bus.SendRepositoryEvent(evt)
 	response := evt.Receive()
 	assert.NotNil(t, response)
 	assert.Nil(t, response.Err)
@@ -47,7 +46,7 @@ func readData(t *testing.T) {
 	t.Log("Read ")
 	query := &TestData{Identifier: "foo"}
 	rd := NewEvent(query, ReadFirstFunc)
-	bus.Get().SendRepositoryEvent(rd)
+	bus.SendRepositoryEvent(rd)
 	response := rd.Receive()
 	assert.NotNil(t, response)
 	fmt.Println("Response Value: ", response)
@@ -63,7 +62,7 @@ func updateData(t *testing.T) {
 	t.Log("Update ")
 	updateData := &TestData{Identifier: "foo", SomeValue: "Doodah"}
 	event := NewEvent(updateData, BasicUpdateFunc)
-	bus.Get().SendRepositoryEvent(event)
+	bus.SendRepositoryEvent(event)
 	response := event.Receive()
 	assert.NotNil(t, response)
 
