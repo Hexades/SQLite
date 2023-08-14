@@ -8,14 +8,12 @@ import (
 	//"reflect"
 	"testing"
 
-	//"time"
-
-	bus "github.com/hexades/hexabus"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSQLiteRepositorySuite(t *testing.T) {
 	_ = os.Remove("test_sqlite.db")
+	newRepository()
 	openDB(t)
 	insertData(t)
 	readData(t)
@@ -25,9 +23,9 @@ func TestSQLiteRepositorySuite(t *testing.T) {
 var td = &TestData{Identifier: "foo", SomeValue: "bar"}
 
 func openDB(t *testing.T) {
-	NewRepository()
 	evt := NewEvent("test_sqlite.db", BasicOpenFunc)
-	bus.SendRepositoryEvent(evt)
+	sendEvent(evt)
+	log.Println("Sent open event:", evt)
 	response := evt.Receive()
 	assert.Nil(t, response.Err)
 }
@@ -35,7 +33,7 @@ func openDB(t *testing.T) {
 func insertData(t *testing.T) {
 	t.Log("Insert ")
 	evt := NewEvent(td, BasicInsertFunc)
-	bus.SendRepositoryEvent(evt)
+	sendEvent(evt)
 	response := evt.Receive()
 	assert.NotNil(t, response)
 	assert.Nil(t, response.Err)
@@ -46,7 +44,7 @@ func readData(t *testing.T) {
 	t.Log("Read ")
 	query := &TestData{Identifier: "foo"}
 	rd := NewEvent(query, ReadFirstFunc)
-	bus.SendRepositoryEvent(rd)
+	sendEvent(rd)
 	response := rd.Receive()
 	assert.NotNil(t, response)
 	fmt.Println("Response Value: ", response)
@@ -62,7 +60,7 @@ func updateData(t *testing.T) {
 	t.Log("Update ")
 	updateData := &TestData{Identifier: "foo", SomeValue: "Doodah"}
 	event := NewEvent(updateData, BasicUpdateFunc)
-	bus.SendRepositoryEvent(event)
+	sendEvent(event)
 	response := event.Receive()
 	assert.NotNil(t, response)
 

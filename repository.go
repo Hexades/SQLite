@@ -1,28 +1,26 @@
 package sqlite
 
 import (
-	bus "github.com/hexades/hexabus"
 	"gorm.io/gorm"
+	"log"
 	_ "modernc.org/sqlite"
 )
 
-type repository struct {
+type Repository struct {
 	db *gorm.DB
 }
 
-func NewRepository() *repository {
-	r := new(repository)
-	bus.AddRepositoryListener(r)
-	return r
+func newRepository() {
+	r := new(Repository)
+	log.Println("Created new respository: ", r)
+	addRepositoryListener(r)
+	log.Println("Added repository as listener")
 }
 
-func (r *repository) OnRepositoryEvent(repositoryChannel <-chan bus.RepositoryEvent) {
+func (r *Repository) onEvent(repositoryChannel <-chan Event) {
 
-	for repoEvent := range repositoryChannel {
-
-		switch evt := repoEvent.(type) {
-		case Event:
-			evt.Execute(r)
-		}
+	for evt := range repositoryChannel {
+		log.Println("Execute event", evt)
+		evt.Execute(r)
 	}
 }

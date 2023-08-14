@@ -2,31 +2,55 @@ package sqlite
 
 import (
 	"fmt"
-	bus "github.com/hexades/hexabus"
 )
 
-type model struct {
-	value any
+type Model struct {
+	Value any
 }
 
-func (m *model) String() string {
-	return fmt.Sprintf("%v", m.value)
+func (m *Model) String() string {
+	return fmt.Sprintf("%v", m.Value)
+}
+
+func NewEvent(value any, executable Executable) Event {
+	return &EventModel{data: &Model{Value: value}, executable: executable}
 }
 
 type Event interface {
-	Execute(repo *repository)
+	Execute(repo *Repository)
+	Send(Response)
+	Receive() Response
 }
 
-type SQLiteEvent struct {
-	bus.RequestResponseEvent
-	data       *model
-	executable SQLiteFunction
+type EventModel struct {
+	responseChannel chan Response
+	data            *Model
+	executable      Executable
 }
 
-func (e *SQLiteEvent) Execute(repo *repository) {
+func (e *EventModel) Execute(repo *Repository) {
 	e.Send(e.executable(e.data, repo))
 }
 
-func NewEvent(value any, executable SQLiteFunction) *SQLiteEvent {
-	return &SQLiteEvent{data: &model{value: value}, executable: executable}
+func (e *EventModel) getChannel() chan Response {
+	if e.responseChannel == nil {
+		e.responseChannel = make(chan Response, 1)
+	}
+	return e.responseChannel
+}
+
+func (e *EventModel) Send(val Response) {
+	e.getChannel() <- val
+}
+
+func (e *EventModel) Receive() Response {
+	return <-e.getChannel()
+}
+func NewResponse(value any, err error) Response {
+	return Response{value, err}
+}
+
+type Response struct {
+	Value any
+	Err   error
 }

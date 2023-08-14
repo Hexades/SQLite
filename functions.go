@@ -3,45 +3,44 @@ package sqlite
 import (
 	"log"
 
-	bus "github.com/hexades/hexabus"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	_ "modernc.org/sqlite"
 )
 
-type SQLiteFunction = func(data *model, repo *repository) bus.Response
+type Executable = func(data *Model, repo *Repository) Response
 
-var BasicOpenFunc = func(data *model, repo *repository) bus.Response {
+var BasicOpenFunc = func(data *Model, repo *Repository) Response {
 	log.Println("Received open: ", data)
 	db, err := gorm.Open(sqlite.Open(data.String()), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
 	repo.db = db
-	return bus.NewResponse(repo.db, err)
+	return NewResponse(repo.db, err)
 }
-var ReadFirstFunc = func(data *model, repo *repository) bus.Response {
-	value := data.value
+var ReadFirstFunc = func(data *Model, repo *Repository) Response {
+	value := data.Value
 	tx := repo.db.First(value)
-	return bus.NewResponse(value, tx.Error)
+	return NewResponse(value, tx.Error)
 }
 
-var BasicInsertFunc = func(data *model, repo *repository) bus.Response {
-	value := data.value
+var BasicInsertFunc = func(data *Model, repo *Repository) Response {
+	value := data.Value
 	//TODO Remove this after initial development
 	repo.db.AutoMigrate(&value)
 	tx := repo.db.Create(value)
-	return bus.NewResponse(value, tx.Error)
+	return NewResponse(value, tx.Error)
 }
 
-var BasicUpdateFunc = func(data *model, repo *repository) bus.Response {
-	value := data.value
+var BasicUpdateFunc = func(data *Model, repo *Repository) Response {
+	value := data.Value
 	tx := repo.db.Updates(value)
-	return bus.NewResponse(value, tx.Error)
+	return NewResponse(value, tx.Error)
 }
 
-var BasicDeleteFunc = func(data *model, repo *repository) bus.Response {
-	value := data.value
+var BasicDeleteFunc = func(data *Model, repo *Repository) Response {
+	value := data.Value
 	tx := repo.db.Delete(value)
-	return bus.NewResponse(value, tx.Error)
+	return NewResponse(value, tx.Error)
 }
