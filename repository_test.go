@@ -1,4 +1,4 @@
-package sqlite
+package hsqlite
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ import (
 
 func TestSQLiteRepositorySuite(t *testing.T) {
 	_ = os.Remove("test_sqlite.db")
-	newRepository()
+	NewRepository()
 	openDB(t)
 	insertData(t)
 	readData(t)
@@ -24,7 +24,7 @@ var td = &TestData{Identifier: "foo", SomeValue: "bar"}
 
 func openDB(t *testing.T) {
 	evt := NewEvent("test_sqlite.db", BasicOpenFunc)
-	sendEvent(evt)
+	SendEvent(evt)
 	log.Println("Sent open event:", evt)
 	response := evt.Receive()
 	assert.Nil(t, response.Err)
@@ -33,7 +33,7 @@ func openDB(t *testing.T) {
 func insertData(t *testing.T) {
 	t.Log("Insert ")
 	evt := NewEvent(td, BasicInsertFunc)
-	sendEvent(evt)
+	SendEvent(evt)
 	response := evt.Receive()
 	assert.NotNil(t, response)
 	assert.Nil(t, response.Err)
@@ -44,7 +44,7 @@ func readData(t *testing.T) {
 	t.Log("Read ")
 	query := &TestData{Identifier: "foo"}
 	rd := NewEvent(query, ReadFirstFunc)
-	sendEvent(rd)
+	SendEvent(rd)
 	response := rd.Receive()
 	assert.NotNil(t, response)
 	fmt.Println("Response Value: ", response)
@@ -60,7 +60,7 @@ func updateData(t *testing.T) {
 	t.Log("Update ")
 	updateData := &TestData{Identifier: "foo", SomeValue: "Doodah"}
 	event := NewEvent(updateData, BasicUpdateFunc)
-	sendEvent(event)
+	SendEvent(event)
 	response := event.Receive()
 	assert.NotNil(t, response)
 
