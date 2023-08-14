@@ -1,4 +1,4 @@
-package hsqlite
+package sqlite
 
 import (
 	"log"
