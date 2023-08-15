@@ -5,7 +5,6 @@ import (
 	"log"
 )
 
-
 type Repository struct {
 	db *gorm.DB
 }
