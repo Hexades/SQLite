@@ -1,4 +1,8 @@
 # SQLite Hexade
+
+## Under design
+Considerations here are about how abstract to make the code. Here the insert struct inherits from the bus project. This has been reverted to previous code while the best design is being tested and evaluated.
+
 SQLite Repository 
 The Hexades architecture uses a local bus with events which contain (a) a channel to send data back to the caller (errors and data) and (b) a higher order function to execute. The function is executed receving the repository and the data. This function is customizable to a client's specific requirements and would be the equivalent, perhaps, of an adapter in pure imperative hexagonal architecture which doesn't use messaging. 
 ```
